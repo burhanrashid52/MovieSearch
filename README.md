@@ -3,6 +3,7 @@ Movie Search
 
 A webapp to search movies from [developer.themoviedb.com](https://developers.themoviedb.org) using React.js
 
+![](http://i.imgur.com/s25hOBEh.gif)
 
 ## How to run the application
 Get the [TMDB API key](https://developers.themoviedb.org/3/getting-started/introduction).
