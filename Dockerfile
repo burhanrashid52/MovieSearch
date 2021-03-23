@@ -14,4 +14,4 @@ RUN npm install --silent
 
 COPY . ./
 
-ENTRYPOINT ["start.sh"]
+ENTRYPOINT ["sh","start.sh"]
