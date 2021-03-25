@@ -6,7 +6,7 @@ export function useMovieSearchApi(defaultQuery) {
     const [query, setQuery] = useState(defaultQuery);
 
     const handleError = (error) => {
-        setMovieState({loading: false, movies: [], error: error.message});
+        setMovieState({loading: false, movies: [], error: "Something went wrong"});
     };
 
     const searchMovies = (searchText) => setQuery(searchText);

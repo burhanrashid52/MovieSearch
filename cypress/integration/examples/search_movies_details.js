@@ -1,19 +1,23 @@
+const TMBD_URL = "https://api.themoviedb.org/3"
+const BASE_URL = Cypress.config().baseUrl
+
+
 describe('Movie Details', () => {
 
     beforeEach(() => {
-        cy.visit('http://localhost:3000')
+        cy.visit(BASE_URL)
         cy.intercept(
             {
-                method: 'GET', // Route all GET requests
-                url: 'https://api.themoviedb.org/3/search/*', // that have a URL that matches '/users/*'
+                method: 'GET',
+                url: TMBD_URL + '/search/*',
             },
-            {fixture: 'movie-result.json'} // and force the response to be: []
+            {fixture: 'movie-result.json'}
         )
 
         cy.intercept(
             {
                 method: 'GET',
-                url: 'https://api.themoviedb.org/3/movie/315635',
+                url: TMBD_URL + '/movie/315635',
             },
             {fixture: 'movie-details-315635.json'}
         )
@@ -21,18 +25,19 @@ describe('Movie Details', () => {
 
     it('Search Spiderman and show first details ', () => {
 
+
         cy.get('input')
             .type('Spiderman')
             .type('{enter}');
 
         cy.get('input').should('have.value', 'Spiderman')
 
-        cy.url().should('eq', 'http://localhost:3000/search?query=Spiderman');
+        cy.url().should('eq', BASE_URL + '/search?query=Spiderman');
 
         cy.wait(1000)
         cy.contains('Spider-Man: Homecoming').click()
 
-        cy.url().should('eq', 'http://localhost:3000/movie/315635');
+        cy.url().should('eq', BASE_URL + '/movie/315635');
 
         cy.fixture('movie-details-315635.json').then((movieDetails) => {
             cy.contains(movieDetails.title)
@@ -42,5 +47,36 @@ describe('Movie Details', () => {
                 cy.contains(movieDetails.genres[i].name)
             }
         });
+    })
+})
+
+describe('Show Error', () => {
+
+    beforeEach(() => {
+        cy.visit(BASE_URL)
+    })
+
+    it('Search Result Error ', () => {
+        cy.get('input')
+            .type('Spiderman')
+            .type('{enter}');
+        cy.contains('Something went wrong')
+    })
+
+    it('Movie Detail Error ', () => {
+        cy.intercept(
+            {
+                method: 'GET',
+                url: TMBD_URL + '/search/*',
+            },
+            {fixture: 'movie-result.json'}
+        )
+        cy.get('input')
+            .type('Spiderman')
+            .type('{enter}');
+
+        cy.contains('Spider-Man: Homecoming').click()
+
+        cy.contains('Something went wrong')
     })
 })
