@@ -8,19 +8,15 @@ const movies = [
 ]
 
 it('should render one movie', () => {
-    const { container, getByText } = render(<Movies movies={movies} />)
+    const {getByText } = render(<Movies movies={movies} />)
 
     expect(getByText(movies[0].title)).toBeInTheDocument();
-    expect(getByText(movies[0].description)).toBeInTheDocument();
 })
 
 it('should render multiple movies', () => {
-    const { container, getByText } = render(<Movies movies={movies} />)
-
+    const {getByText } = render(<Movies movies={movies} />)
     expect(getByText(movies[0].title)).toBeInTheDocument();
-    expect(getByText(movies[0].description)).toBeInTheDocument();
     expect(getByText(movies[1].title)).toBeInTheDocument();
-    expect(getByText(movies[1].description)).toBeInTheDocument();
 })
 
 it('should render movie image', () => {

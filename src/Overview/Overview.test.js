@@ -5,12 +5,20 @@ import {fetchDetails} from "../api";
 
 jest.mock('../api');
 
+const routeInfo = {
+    params: {
+        movieId: 123
+    }
+}
+
 it('should loading initially', async () => {
     fetchDetails.mockReturnValue(new Promise(() => {
     }))
-    const movieId = 123
-    const {queryByText} = render(<MovieOverview {...{movieId}}/>)
-    expect(queryByText("Loading...")).toBeInTheDocument()
+    const {container} = render(<MovieOverview match={routeInfo}/>)
+
+    const imgElems = container.querySelectorAll('img');
+    expect(imgElems[0].getAttribute('src')).toContain("loader.png");
+    expect(imgElems[0].getAttribute('alt')).toBe("loading...");
 })
 
 it('should show details', async () => {
@@ -21,8 +29,7 @@ it('should show details', async () => {
         genres: []
     };
     fetchDetails.mockReturnValue(Promise.resolve(movieDetails))
-    const movieId = 123
-    const {queryByText} = render(<MovieOverview {...{movieId}}/>)
+    const {queryByText} = render(<MovieOverview match={routeInfo}/>)
     await waitForDomChange()
     expect(queryByText(movieDetails.title)).toBeInTheDocument()
     expect(queryByText(movieDetails.tagline)).toBeInTheDocument()
@@ -38,8 +45,7 @@ it('should show genres', async () => {
         genres: ["Action", "Comedy"]
     };
     fetchDetails.mockReturnValue(Promise.resolve(movieDetails))
-    const movieId = 123
-    const {queryByText} = render(<MovieOverview {...{movieId}}/>)
+    const {queryByText} = render(<MovieOverview match={routeInfo}/>)
     await waitForDomChange()
     movieDetails.genres.forEach(value =>
         expect(queryByText(value)).toBeInTheDocument()
