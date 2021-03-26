@@ -1,8 +1,7 @@
-name: Build and Deploy
+name: Build, Test and Deploy
 on:
   push:
-    branches:
-      - firebase-deploy
+    branches: [ master ]
 env:
   REACT_APP_MOVIE_API_KEY: ${{ secrets.TMBD_API_KEY }}
 
