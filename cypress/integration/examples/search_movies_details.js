@@ -57,6 +57,14 @@ describe('Show Error', () => {
     })
 
     it('Search Result Error ', () => {
+        cy.intercept(
+            {
+                method: 'GET',
+                url: TMBD_URL + '/search/*',
+            },
+            []
+        )
+
         cy.get('input')
             .type('Spiderman')
             .type('{enter}');
@@ -64,6 +72,7 @@ describe('Show Error', () => {
     })
 
     it('Movie Detail Error ', () => {
+
         cy.intercept(
             {
                 method: 'GET',
@@ -71,6 +80,14 @@ describe('Show Error', () => {
             },
             {fixture: 'movie-result.json'}
         )
+        cy.intercept(
+            {
+                method: 'GET',
+                url: TMBD_URL + '/movie/315635',
+            },
+            []
+        )
+
         cy.get('input')
             .type('Spiderman')
             .type('{enter}');
