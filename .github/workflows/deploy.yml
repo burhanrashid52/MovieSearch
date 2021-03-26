@@ -3,39 +3,50 @@ on:
   push:
     branches:
       - firebase-deploy
+env:
+  REACT_APP_MOVIE_API_KEY: ${{ secrets.TMBD_API_KEY }}
 
 jobs:
-  build:
-    name: Build
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 14.x ]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+      - run: npm run build --if-present
+      - run: npm test
+
+  cypress-test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@master
-      - name: Install Dependencies
-        run: npm install
-      - name: Set TMBD API key
-        run: export REACT_APP_MOVIE_API_KEY=${{ secrets.TMBD_API_KEY }}
-      - name: Build
-        run: npm run build
-      - name: Archive Production Artifact
-        uses: actions/upload-artifact@master
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v2
         with:
-          name: dist
-          path: dist
-  deploy:
+          build: npm run build
+          start: npm start
+          wait-on: http://localhost:3000
+
+  deploy-firebase:
     name: Deploy
-    needs: build
+    needs: [ test,cypress-test ]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@master
-      - name: Download Artifact
-        uses: actions/download-artifact@master
+      - uses: actions/checkout@master
+      - uses: actions/setup-node@master
         with:
-          name: dist
-          path: dist
-      - name: Deploy to Firebase
-        uses: w9jds/firebase-action@master
+          node-version: '14.x'
+      - run: npm install
+      - run: npm run build
+      - uses: w9jds/firebase-action@master
         with:
           args: deploy --only hosting
         env:
